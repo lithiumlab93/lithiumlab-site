@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Lithium Lab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora :wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #00ffff;
+      --text-color: #f0f0f0;
+      --secondary-text: #ccc;
+      --footer-text: #aaa;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background-image: 
+        radial-gradient(rgba(255,255,255,0.2) 0.5px, transparent 1px),
+        linear-gradient(135deg, #225e77 0%, #000000 100%),
+        radial-gradient(circle, rgba(255,255,255,0.08) 2px, transparent 3px);
+      background-size: 6px 6px, cover, 10px 10px;
+      background-repeat: repeat, no-repeat, repeat;
+      z-index: -1;
+    }
+
+    body {
+      position: relative;
+      font-family: 'Sora', sans-serif;
+      background-color: #000;
+      color: var(--text-color);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .language-switcher {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 8px;
+      z-index: 1000;
+    }
+
+    .language-btn {
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: 1px solid var(--primary-color);
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      backdrop-filter: blur(5px);
+    }
+
+    .language-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+    }
+
+    .language-btn.active {
+      background: var(--primary-color);
+      color: #000;
+    }
+
+    .header-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 30px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .logo-img {
+      height: auto;
+      width: 100%;
+      max-width: 480px;
+      max-height: 480px;
+      animation: pulse 4s infinite alternate;
+      filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0));
+      transition: all 0.5s ease;
+    }
+
+    .logo-img:hover {
+      animation: energyPulse 1.5s infinite alternate;
+      filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.7));
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.3)); }
+      100% { transform: scale(1.02); filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.5)); }
+    }
+
+    @keyframes energyPulse {
+      0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5)); }
+      50% { transform: scale(1.03); filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.8)); }
+      100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5)); }
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+    }
+
+    .social-icons a {
+      display: inline-block;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0));
+      position: relative;
+    }
+
+    .social-icons a:hover {
+      transform: scale(1.15);
+      filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.7));
+    }
+
+    .social-icons img {
+      width: 40px;
+      height: 40px;
+      transition: transform 0.3s ease;
+    }
+
+    .email-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      border: 1px solid var(--primary-color);
+      border-radius: 8px;
+      padding: 10px;
+      min-width: 200px;
+      display: none;
+      z-index: 100;
+      margin-top: 10px;
+    }
+
+    .email-dropdown a {
+      display: block;
+      color: var(--text-color);
+      padding: 8px 12px;
+      text-decoration: none;
+      border-radius: 4px;
+      margin: 2px 0;
+      font-size: 14px;
+    }
+
+    .email-dropdown a:hover {
+      background: rgba(0, 255, 255, 0.2);
+    }
+
+    .email-container:hover .email-dropdown {
+      display: block;
+    }
+
+    .section {
+      max-width: 1000px;
+      margin: 0 auto;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    .section-header {
+      padding: 25px 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .section-header:hover {
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    .section-header h2 {
+      font-size: clamp(22px, 5vw, 28px);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .section-header h3 {
+      font-weight: 500;
+      color: var(--secondary-text);
+      font-size: clamp(18px, 4vw, 22px);
+      margin: 5px 0 0 0;
+    }
+
+    .section-content {
+      padding: 0 20px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, padding 0.5s ease;
+    }
+
+    .section.active .section-content {
+      padding: 0 20px 30px 20px;
+      max-height: 2000px;
+    }
+
+    .section-toggle {
+      width: 24px;
+      height: 24px;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+
+    .section.active .section-toggle {
+      transform: rotate(180deg);
+    }
+
+    .section-toggle::before,
+    .section-toggle::after {
+      content: '';
+      position: absolute;
+      background-color: var(--primary-color);
+      transition: all 0.3s ease;
+    }
+
+    .section-toggle::before {
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      transform: translateY(-50%);
+    }
+
+    .section-toggle::after {
+      top: 0;
+      left: 50%;
+      bottom: 0;
+      width: 2px;
+      transform: translateX(-50%);
+    }
+
+    .section.active .section-toggle::after {
+      opacity: 0;
+    }
+
+    .section-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin: 20px 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .section ul {
+      list-style-type: none;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0;
+      text-align: left;
+      font-size: clamp(16px, 4vw, 18px);
+      line-height: 1.7;
+      color: var(--secondary-text);
+    }
+
+    .section ul li::before {
+      content: "• ";
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .section p {
+      max-width: 700px;
+      margin: 20px auto 0;
+      text-align: left;
+      font-size: clamp(16px, 4vw, 18px);
+      color: var(--secondary-text);
+      line-height: 1.7;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 14px;
+      color: var(--footer-text);
+      margin-top: auto;
+    }
+
+    [data-lang]:not([data-lang="en"]) {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        font-size: calc(14px + 0.5vw);
+      }
+      .section-header,
+      .section p,
+      .section ul {
+        font-size: calc(14px + 0.3vw);
+      }
+      .section ul,
+      .section p {
+        padding: 0 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .language-switcher {
+        top: 10px;
+        right: 10px;
+      }
+      .language-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      .social-icons img {
+        width: 35px;
+        height: 35px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="language-switcher">
+  <button class="language-btn active" onclick="switchLanguage('en')">EN</button>
+  <button class="language-btn" onclick="switchLanguage('ru')">RU</button>
+  <button class="language-btn" onclick="switchLanguage('az')">AZ</button>
+</div>
+
+<div class="header-container">
+  <div class="logo-container">
+    <img src="https://i.imgur.com/Oa4fCzU.png " alt="Lithium Lab Logo" class="logo-img">
+  </div>
+  <div class="social-icons">
+    <a href="https://www.instagram.com/lithiumlaboratory/ " target="_blank" title="Instagram">
+      <img src="https://img.icons8.com/ios-filled/45/ffffff/instagram-new.png " alt="Instagram" />
+    </a>
+    <div class="email-container" style="position: relative;">
+      <a href="mailto:service@lithiumlab.io" title="Email" class="email-main">
+        <img src="https://img.icons8.com/ios-filled/45/ffffff/new-post.png " alt="Email" />
+      </a>
+      <div class="email-dropdown">
+        <a href="mailto:service@lithiumlab.io">service@lithiumlab.io</a>
+        <a href="mailto:info@lithiumlab.io">info@lithiumlab.io</a>
+      </div>
+    </div>
+    <a href="https://wa.me/994105256599 " target="_blank" title="WhatsApp">
+      <img src="https://img.icons8.com/ios-filled/45/ffffff/whatsapp.png " alt="WhatsApp" />
+    </a>
+    <a href="https://maps.app.goo.gl/9Nc22rDHGLiLXQXF8 " target="_blank" title="Location">
+      <img src="https://img.icons8.com/ios-filled/45/ffffff/marker.png " alt="Location" />
+    </a>
+  </div>
+</div>
+
+<!-- Английская версия -->
+<div data-lang="en">
+  <!-- BATTERY REPAIR SERVICE -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>BATTERY REPAIR SERVICE</h2>
+        <h3>Reliability and performance in every battery</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/RIk7JXQ.jpeg " alt="Battery Repair Service" class="section-img">
+      <ul>
+        <li>Deep diagnostics</li>
+        <li>Cell and BMS testing</li>
+        <li>Cell replacement and balancing</li>
+        <li>Capacity and power output upgrades</li>
+      </ul>
+      <p>Reliability and performance in every battery.</p>
+    </div>
+  </div>
+
+  <!-- Diagnostics & Analysis -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Diagnostics & Analysis</h2>
+        <h3>Deep diagnostics for maximum efficiency</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/CQ7UB8U.png " alt="Diagnostics" class="section-img">
+      <ul>
+        <li>Cell analysis (voltage, capacity, internal resistance)</li>
+        <li>BMS and protection circuit testing</li>
+        <li>Detection of degraded or faulty cells</li>
+      </ul>
+      <p>The result - a clear and detailed report on battery health.</p>
+    </div>
+  </div>
+
+  <!-- Restoration & Repair -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Restoration & Repair</h2>
+        <h3>Repairs that restore full performance</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/kb1ad1b.png " alt="Battery Repair" class="section-img">
+      <ul>
+        <li>Replace damaged or degraded cells</li>
+        <li>Rebalance the entire pack</li>
+        <li>Repair solder joints and wiring</li>
+        <li>Run stress/load tests</li>
+      </ul>
+      <p>You get a battery that performs like new - safely and reliably.</p>
+    </div>
+  </div>
+
+  <!-- Upgrades & Custom Solutions -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Upgrades & Custom Solutions</h2>
+        <h3>Tailored upgrades for more power & range</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/62eqZMA.png " alt="Upgrade" class="section-img">
+      <ul>
+        <li>Increased capacity for longer range</li>
+        <li>Higher discharge current for performance</li>
+        <li>BMS replacement with advanced features</li>
+        <li>Custom cell configurations for your specific use</li>
+      </ul>
+      <p>Maximum performance and individual approach</p>
+    </div>
+  </div>
+
+  <!-- Lead-Acid to Lithium Conversion -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Lead-Acid to Lithium Conversion</h2>
+        <h3>Modernize your power with lithium technology</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/kFzM9uf.jpg " alt="Lead-acid vs Lithium" class="section-img">
+      <ul>
+        <li>Replace outdated lead-acid or gel batteries</li>
+        <li>Up to 70% weight reduction</li>
+        <li>3-5x longer lifespan</li>
+        <li>Faster charging and deeper discharges</li>
+        <li>Custom voltage and capacity configurations</li>
+      </ul>
+      <p>Experience the lithium advantage - lighter, more powerful and maintenance-free.</p>
+    </div>
+  </div>
+
+  <!-- Solar Battery Solutions -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Solar Battery Solutions</h2>
+        <h3>Reliable energy storage for solar systems</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/bqqJhRP.jpeg " alt="Solar Batteries" class="section-img">
+      <ul>
+        <li>High-capacity lithium storage banks</li>
+        <li>Seamless integration with existing solar systems</li>
+        <li>Smart BMS for optimal solar charging</li>
+        <li>Off-grid and hybrid solutions</li>
+        <li>Weather-resistant enclosures</li>
+      </ul>
+      <p>Store more solar energy and use it when you need it most.</p>
+    </div>
+  </div>
+
+  <!-- Custom Powerwall Assemblies -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Custom Powerwall Assemblies</h2>
+        <h3>Tailored energy storage for your home or business</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/8nXitiB.jpg " alt="Custom Powerwall" class="section-img">
+      <ul>
+        <li>Custom capacity from 5kWh to 50kWh+</li>
+        <li>Wall-mounted or rack configurations</li>
+        <li>Grid-tie and backup power options</li>
+        <li>Smart monitoring and control systems</li>
+        <li>Expandable as your needs grow</li>
+      </ul>
+      <p>Your perfect energy storage solution, built to your specifications.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Lilab LLC. All rights reserved.</p>
+  </footer>
+</div>
+
+<!-- Русская версия -->
+<div data-lang="ru">
+  <!-- РЕМОНТ АККУМУЛЯТОРОВ -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>РЕМОНТ АККУМУЛЯТОРОВ</h2>
+        <h3>Надёжность и производительность в каждой батарее</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/RIk7JXQ.jpeg " alt="Ремонт аккумуляторов" class="section-img">
+      <ul>
+        <li>Глубокая диагностика</li>
+        <li>Тестирование элементов и BMS</li>
+        <li>Замена и балансировка элементов</li>
+        <li>Увеличение ёмкости и мощности</li>
+      </ul>
+      <p>Надёжность и производительность в каждой батарее.</p>
+    </div>
+  </div>
+
+  <!-- Диагностика и анализ -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Диагностика и анализ</h2>
+        <h3>Глубокая диагностика для максимальной эффективности</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/CQ7UB8U.png " alt="Диагностика" class="section-img">
+      <ul>
+        <li>Анализ элементов (напряжение, ёмкость, внутреннее сопротивление)</li>
+        <li>Тестирование BMS и защитных цепей</li>
+        <li>Выявление деградировавших или неисправных элементов</li>
+      </ul>
+      <p>Результат — чёткий и детальный отчёт о состоянии батареи.</p>
+    </div>
+  </div>
+
+  <!-- Восстановление и ремонт -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Восстановление и ремонт</h2>
+        <h3>Ремонт, восстанавливающий полную производительность</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/kb1ad1b.png " alt="Ремонт аккумуляторов" class="section-img">
+      <ul>
+        <li>Замена повреждённых или изношенных элементов</li>
+        <li>Балансировка всего аккумулятора</li>
+        <li>Ремонт паяных соединений и проводки</li>
+        <li>Нагрузочные тесты</li>
+      </ul>
+      <p>Вы получаете батарею, которая работает как новая — безопасно и надёжно.</p>
+    </div>
+  </div>
+
+  <!-- Улучшения и индивидуальные решения -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Улучшения и индивидуальные решения</h2>
+        <h3>Индивидуальные модификации для большей мощности и запаса хода</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/62eqZMA.png " alt="Улучшения" class="section-img">
+      <ul>
+        <li>Увеличение ёмкости для большего запаса хода</li>
+        <li>Увеличение тока разряда для лучшей производительности</li>
+        <li>Замена BMS на более продвинутые версии</li>
+        <li>Индивидуальные конфигурации под ваши нужды</li>
+      </ul>
+      <p>Максимум производительности и индивидуальный подход</p>
+    </div>
+  </div>
+
+  <!-- Замена свинцовых на литиевые АКБ -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Замена свинцовых на литиевые АКБ</h2>
+        <h3>Модернизация питания с литиевой технологией</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/kFzM9uf.jpg " alt="Свинец → Литий" class="section-img">
+      <ul>
+        <li>Замена устаревших свинцово-кислотных и гелевых батарей</li>
+        <li>Снижение веса до 70%</li>
+        <li>Срок службы в 3-5 раз больше</li>
+        <li>Быстрая зарядка и глубокий разряд</li>
+        <li>Индивидуальные конфигурации напряжения и ёмкости</li>
+      </ul>
+      <p>Преимущества лития - легче, мощнее и не требует обслуживания.</p>
+    </div>
+  </div>
+
+  <!-- Аккумуляторы для солнечных систем -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Аккумуляторы для солнечных систем</h2>
+        <h3>Надёжное хранение энергии для солнечных панелей</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/bqqJhRP.jpeg " alt="Солнечные батареи" class="section-img">
+      <ul>
+        <li>Высокоёмкие литиевые батареи</li>
+        <li>Интеграция с существующими солнечными системами</li>
+        <li>Умный BMS для оптимальной зарядки</li>
+        <li>Автономные и гибридные решения</li>
+        <li>Защищённые от непогоды корпуса</li>
+      </ul>
+      <p>Храните больше солнечной энергии и используйте когда нужно.</p>
+    </div>
+  </div>
+
+  <!-- Сборка Powerwall на заказ -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Сборка Powerwall на заказ</h2>
+        <h3>Индивидуальные системы хранения энергии</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/8nXitiB.jpg " alt="Кастомный Powerwall" class="section-img">
+      <ul>
+        <li>Ёмкость от 5 кВт·ч до 50 кВт·ч и выше</li>
+        <li>Настенное или стоечное размещение</li>
+        <li>Подключение к сети и резервное питание</li>
+        <li>Системы мониторинга и управления</li>
+        <li>Возможность расширения</li>
+      </ul>
+      <p>Идеальное решение для хранения энергии по вашим требованиям.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 ООО Lilab. Все права защищены.</p>
+  </footer>
+</div>
+
+<!-- Азербайджанская версия -->
+<div data-lang="az">
+  <!-- BATAREYA TƏMİR XİDMƏTİ -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>BATAREYA TƏMİR XİDMƏTİ</h2>
+        <h3>Hər batareyada etibarlılıq və yüksək performans</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/RIk7JXQ.jpeg " alt="Batareya təmiri" class="section-img">
+      <ul>
+        <li>Dərin diaqnostika</li>
+        <li>Hüceyrə və BMS testləri</li>
+        <li>Hüceyrələrin dəyişdirilməsi və balanslaşdırılması</li>
+        <li>Tutum və gücün artırılması</li>
+      </ul>
+      <p>Hər batareyada etibarlılıq və yüksək performans.</p>
+    </div>
+  </div>
+
+  <!-- Diaqnostika və Təhlil -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Diaqnostika və Təhlil</h2>
+        <h3>Maksimum səmərəlilik üçün dərin diaqnostika</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/CQ7UB8U.png " alt="Diaqnostika" class="section-img">
+      <ul>
+        <li>Hüceyrə analizi (gərginlik, tutum, daxili müqavimət)</li>
+        <li>BMS və qoruyucu dövrələrin test edilməsi</li>
+        <li>Zəifləmiş hüceyrələrin aşkarlanması</li>
+      </ul>
+      <p>Nəticə — batareyanın vəziyyəti haqqında aydın hesabat.</p>
+    </div>
+  </div>
+
+  <!-- Bərpa və Təmir -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Bərpa və Təmir</h2>
+        <h3>Tam performansı bərpa edən təmir işləri</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/kb1ad1b.png " alt="Batareya təmiri" class="section-img">
+      <ul>
+        <li>Zədələnmiş hüceyrələrin dəyişdirilməsi</li>
+        <li>Bütün batareyanın balanslaşdırılması</li>
+        <li>Lehim və naqillərin təmiri</li>
+        <li>Yükləmə testləri</li>
+      </ul>
+      <p>Yeni kimi işləyən batareya — təhlükəsiz və etibarlı.</p>
+    </div>
+  </div>
+
+  <!-- Təkmilləşdirmə və Fərdi Həllər -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Təkmilləşdirmə və Fərdi Həllər</h2>
+        <h3>Daha çox güc və məsafə üçün fərdiləşdirilmiş təkmilləşdirmələr</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/62eqZMA.png " alt="Təkmilləşdirmə" class="section-img">
+      <ul>
+        <li>Daha çox məsafə üçün tutumun artırılması</li>
+        <li>Daha yaxşı performans üçün boşalma cərəyanının artırılması</li>
+        <li>BMS-in daha qabaqcıl versiyalarla əvəz edilməsi</li>
+        <li>Ehtiyaclarınıza uyğun hüceyrə konfiqurasiyası</li>
+      </ul>
+      <p>Maksimum performans və fərdi yanaşma</p>
+    </div>
+  </div>
+
+  <!-- Qurğuşun-Əsaslı Batareyaların Litium ilə Əvəzi -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Qurğuşun-Əsaslı Batareyaların Litium ilə Əvəzi</h2>
+        <h3>Litium texnologiyası ilə enerjini modernləşdirin</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/kFzM9uf.jpg " alt="Qurğuşun → Litiy" class="section-img">
+      <ul>
+        <li>Köhnəlmiş qurğuşun-əsaslı və ya jel batareyaların dəyişdirilməsi</li>
+        <li>Çəkinin 70%-ə qədər azalması</li>
+        <li>Xidmət müddətinin 3-5 dəfə artması</li>
+        <li>Sürətli doldurma və dərin boşalma</li>
+        <li>Gərginlik və tutumda fərdi həllər</li>
+      </ul>
+      <p>Litium üstünlüklərindən yararlanın - yüngül, güclü və qulluqsuz.</p>
+    </div>
+  </div>
+
+  <!-- Günəş Panelləri üçün Batareya Sistemləri -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Günəş Panelləri üçün Batareya Sistemləri</h2>
+        <h3>Günəş sistemləri üçün etibarlı enerji saxlanması</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/bqqJhRP.jpeg " alt="Günəş batareyaları" class="section-img">
+      <ul>
+        <li>Yüksək tutumlu litiya batareyaları</li>
+        <li>Mövcud günəş sistemləri ilə inteqrasiya</li>
+        <li>Ağıllı BMS üçün optimal doldurma</li>
+        <li>Şəbəkədən asılı olmayan həllər</li>
+        <li>Hava şəraitinə davamlı korpuslar</li>
+      </ul>
+      <p>Daha çox günəş enerjisini saxlayın və ehtiyacınız olduqda istifadə edin.</p>
+    </div>
+  </div>
+
+  <!-- Fərdi Powerwall Qurğuları -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div>
+        <h2>Fərdi Powerwall Qurğuları</h2>
+        <h3>Ev və ya iş üçün fərdi enerji saxlanması</h3>
+      </div>
+      <div class="section-toggle"></div>
+    </div>
+    <div class="section-content">
+      <img src="https://i.imgur.com/8nXitiB.jpg " alt="Fərdi Powerwall" class="section-img">
+      <ul>
+        <li>5 kWh-dan 50 kWh-a qədər fərdi tutum</li>
+        <li>Divara və ya rafa quraşdırma</li>
+        <li>Şəbəkəyə qoşulma və ehtiyat enerji variantları</li>
+        <li>Ağıllı monitorinq və idarəetmə sistemləri</li>
+        <li>Ehtiyac artdıqca genişləndirilə bilər</li>
+      </ul>
+      <p>Enerji saxlamaq üçün sizin üçün ideal həll.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Lilab MMC. Bütün hüquqlar qorunur.</p>
+  </footer>
+</div>
+
+<script>
+  function switchLanguage(lang) {
+    document.querySelectorAll('.language-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.language-btn[onclick="switchLanguage('${lang}')"]`).classList.add('active');
+    document.querySelectorAll('[data-lang]').forEach(el => el.style.display = 'none');
+    document.querySelector(`[data-lang="${lang}"]`).style.display = 'block';
+  }
+
+  function toggleSection(header) {
+    const section = header.parentElement;
+    section.classList.toggle('active');
+  }
+
+  // По умолчанию все блоки закрыты
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.section').forEach(section => {
+      section.classList.remove('active');
+    });
+  });
+
+  // Анимация лого при клике
+  document.querySelector('.logo-img')?.addEventListener('click', function () {
+    this.style.animation = 'none';
+    void this.offsetWidth;
+    this.style.animation = 'energyPulse 0.8s 2 alternate';
+  });
+</script>
+</body>
+</html>
